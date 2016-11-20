@@ -18,9 +18,6 @@
         <h1>strace</h1>
         <p>linux syscall tracer</p>
 
-
-        <p class="view"><a href="https://github.com/strace">View My GitHub Profile</a></p>
-
       </header>
       <section>
         <p><strong>strace</strong> is a diagnostic, debugging and instructional userspace utility for Linux.
@@ -75,13 +72,13 @@ strace: Process 26380 attached
 <h2>
 <a id="filter-by-type-of-syscall" class="anchor" href="#filter-by-type-of-syscall" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Filter by type of syscall.</h2>
 
-<pre><code>-e trace=desc       Trace all file descriptor related system calls.
-         file       Trace  all  system  calls  which take a file name as an argument.
-         ipc        Trace all IPC related system calls.
-         memory     Trace all memory mapping related system calls.
-         network    Trace all the network related system calls.
-         process    Trace all system calls which involve process management.
-         signal     Trace all signal related system calls.
+<pre><code>-e trace=desc       Trace file descriptor related system calls.
+         file       Trace system calls which take a file name as an argument.
+         ipc        Trace IPC related system calls.
+         memory     Trace memory mapping related system calls.
+         network    Trace the network related system calls.
+         process    Trace system calls which involve process management.
+         signal     Trace signal related system calls.
 </code></pre>
 
 <h2>
