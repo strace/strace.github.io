@@ -23,7 +23,104 @@
 
       </header>
       <section>
-        <p>strace is a diagnostic, debugging and instructional userspace utility for Linux.  It is used to monitor interactions between processes and the Linux kernel, which include system calls, signal deliveries, and changes of process state.  The operation of strace is made possible by the kernel feature known as ptrace.</p>
+        <p><strong>strace</strong> is a diagnostic, debugging and instructional userspace utility for Linux.
+It is used to monitor and tamper with interactions between processes
+and the Linux kernel, which include system calls, signal deliveries,
+and changes of process state.</p>
+
+<p>System administrators, diagnosticians and trouble-shooters will find
+it invaluable for solving problems with
+programs for which the source is not readily available since
+they do not need to be recompiled in order to trace them.</p>
+
+<p>The operation of strace is made possible
+by the kernel feature known as <a href="https://en.wikipedia.org/wiki/ptrace">ptrace</a>.</p>
+
+<h1>
+<a id="some-of-the-features" class="anchor" href="#some-of-the-features" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Some of the features</h1>
+
+<h2>
+<a id="attach-to-an-already-running-process" class="anchor" href="#attach-to-an-already-running-process" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Attach to an already running process.</h2>
+
+<pre><code>$ strace -p 26380
+strace: Process 26380 attached
+...
+</code></pre>
+
+<h2>
+<a id="count-time-calls-and-errors-for-each-system-call" class="anchor" href="#count-time-calls-and-errors-for-each-system-call" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Count time, calls, and errors for each system call.</h2>
+
+<pre><code>$ strace -c ls &gt; /dev/null
+% time     seconds  usecs/call     calls    errors syscall
+------ ----------- ----------- --------- --------- ----------------
+ 89.76    0.008016           4      1912           getdents
+  8.71    0.000778           0     11778           lstat
+  0.81    0.000072           0      8894           write
+  0.60    0.000054           0       943           open
+  0.11    0.000010           0       942           close
+  0.00    0.000000           0         1           read
+  0.00    0.000000           0       944           fstat
+  0.00    0.000000           0         8           mmap
+  0.00    0.000000           0         4           mprotect
+  0.00    0.000000           0         1           munmap
+  0.00    0.000000           0         7           brk
+  0.00    0.000000           0         3         3 access
+  0.00    0.000000           0         1           execve
+  0.00    0.000000           0         1           sysinfo
+  0.00    0.000000           0         1           arch_prctl
+------ ----------- ----------- --------- --------- ----------------
+100.00    0.008930                 25440         3 total
+</code></pre>
+
+<h2>
+<a id="filter-by-type-of-syscall" class="anchor" href="#filter-by-type-of-syscall" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Filter by type of syscall.</h2>
+
+<pre><code>-e trace=desc       Trace all file descriptor related system calls.
+         file       Trace  all  system  calls  which take a file name as an argument.
+         ipc        Trace all IPC related system calls.
+         memory     Trace all memory mapping related system calls.
+         network    Trace all the network related system calls.
+         process    Trace all system calls which involve process management.
+         signal     Trace all signal related system calls.
+</code></pre>
+
+<h2>
+<a id="perform-a-full-hexadecimal-and-ascii-dump-of-all-the-data-read-fromwritten-to-file-descriptors" class="anchor" href="#perform-a-full-hexadecimal-and-ascii-dump-of-all-the-data-read-fromwritten-to-file-descriptors" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Perform a full hexadecimal and ASCII dump of all the data read from/written to file descriptors.</h2>
+
+<pre><code>$ strace -ewrite=1 -e trace=sendmsg ./recvmsg &gt; /dev/null
+sendmsg(1, {msg_name=NULL, msg_namelen=0, msg_iov=[{iov_base="012", iov_len=3},
+{iov_base="34567", iov_len=5}, {iov_base="89abcde", iov_len=7}], msg_iovlen=3,
+msg_controllen=0, msg_flags=0}, 0) = 15
+ * 3 bytes in buffer 0
+ | 00000  30 31 32                                          012              |
+ * 5 bytes in buffer 1
+ | 00000  33 34 35 36 37                                    34567            |
+ * 7 bytes in buffer 2
+ | 00000  38 39 61 62 63 64 65                              89abcde          |
++++ exited with 0 +++
+</code></pre>
+
+<h2>
+<a id="perform-a-syscall-fault-injection" class="anchor" href="#perform-a-syscall-fault-injection" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Perform a syscall fault injection.</h2>
+
+<pre><code>$ strace -e trace=open -e fault=open cat
+open("/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = -1 ENOSYS (Function not implemented) (INJECTED)
+open("/lib/x86_64-linux-gnu/tls/x86_64/libc.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOSYS (Function not implemented) (INJECTED)
+open("/lib/x86_64-linux-gnu/tls/libc.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOSYS (Function not implemented) (INJECTED)
+open("/lib/x86_64-linux-gnu/x86_64/libc.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOSYS (Function not implemented) (INJECTED)
+open("/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOSYS (Function not implemented) (INJECTED)
+cat: error while loading shared libraries: libc.so.6: cannot open shared object file: Error 38
++++ exited with 127 +++
+</code></pre>
+
+<h1>
+<a id="get-latest-strace-and-contribute" class="anchor" href="#get-latest-strace-and-contribute" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Get latest strace and contribute</h1>
+
+<ul>
+<li>Official repositories are at <a href="https://sourceforge.net/p/strace/code/ci/master/tree/">Sourceforge</a> and <a href="https://github.com/strace/strace">Github</a>.</li>
+<li>You can get latest packages from <a href="https://apps.fedoraproject.org/packages/strace">Fedora rawhide</a> or <a href="https://build.opensuse.org/package/show/home:ldv_alt/strace/">OBS</a>.</li>
+<li>Mailing list: <a href="mailto:strace-devel@lists.sourceforge.net">strace-devel@lists.sourceforge.net</a>.</li>
+</ul>
       </section>
       <footer>
         <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
